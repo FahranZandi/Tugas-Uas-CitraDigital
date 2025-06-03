@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload dan Lihat Proses Citra</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        .image-section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        img {
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            margin-top: 10px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        input[type="file"] {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload dan Lihat Proses Citra</h1>
+
+    <!-- Form upload ke route "/" -->
+    <form action="/" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    {% if original_filename %}
+        <div class="image-section">
+            <h2>Gambar Asli (RGB)</h2>
+            <img src="{{ url_for('static', filename=original_filename) }}" alt="Original RGB">
+        </div>
+    {% endif %}
+
+    {% if step_images %}
+        <!-- Segmentasi -->
+        <div class="image-section">
+            <h2>Masking Warna Kuning</h2>
+            <img src="{{ url_for('static', filename=step_images.mask) }}" alt="Masking Kuning">
+        </div>
+        <div class="image-section">
+            <h2>Setelah Opening (Erosi + Dilasi)</h2>
+            <img src="{{ url_for('static', filename=step_images.opening) }}" alt="Opening">
+        </div>
+
+        <!-- Improve Image Quality (5 langkah lama + Sharpen + Denoise) -->
+        <div class="image-section">
+            <h2>Grayscale (Improve Quality)</h2>
+            <img src="{{ url_for('static', filename=step_images.grayscale_iq) }}" alt="Grayscale IQ">
+        </div>
+
+        <div class="image-section">
+            <h2>Kontras (Enhanced, Berwarna)</h2>
+            <img src="{{ url_for('static', filename=step_images.contrast_iq) }}" alt="Contrast IQ">
+        </div>
+
+        <div class="image-section">
+            <h2>Gaussian Blur (Berwarna)</h2>
+            <img src="{{ url_for('static', filename=step_images.blur_iq) }}" alt="Gaussian Blur IQ">
+        </div>
+
+        <div class="image-section">
+            <h2>Crop (200×300 di Tengah, Berwarna)</h2>
+            <img src="{{ url_for('static', filename=step_images.crop_iq) }}" alt="Crop IQ">
+        </div>
+
+        <div class="image-section">
+            <h2>Portrait Mode (Lebar 150px, Berwarna)</h2>
+            <img src="{{ url_for('static', filename=step_images.portrait_iq) }}" alt="Portrait IQ">
+        </div>
+
+        <div class="image-section">
+            <h2>Sharpening (Mempertajam Citra, Berwarna)</h2>
+            <img src="{{ url_for('static', filename=step_images.sharpen_iq) }}" alt="Sharpening IQ">
+        </div>
+
+        <div class="image-section">
+            <h2>Noise Reduction (fastNlMeansDenoisingColored, Berwarna)</h2>
+            <img src="{{ url_for('static', filename=step_images.denoise_color_iq) }}" alt="Denoise Color IQ">
+        </div>
+
+        <div class="image-section">
+            <h2>Noise Reduction (Median Blur pada Grayscale)</h2>
+            <img src="{{ url_for('static', filename=step_images.denoise_gray_iq) }}" alt="Denoise Gray IQ">
+        </div>
+
+        <!-- Edge Detection -->
+        <div class="image-section">
+            <h2>Grayscale untuk Edge Detection</h2>
+            <img src="{{ url_for('static', filename=step_images.ed_gray) }}" alt="Gray for Edge">
+        </div>
+
+        <div class="image-section">
+            <h2>Edge Detection (Canny)</h2>
+            <img src="{{ url_for('static', filename=step_images.edge) }}" alt="Edge Detection">
+        </div>
+    {% endif %}
+</body>
+</html>
