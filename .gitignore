@@ -1,0 +1,5 @@
+# Abaikan semua file dalam folder static/upload
+static/upload/*
+
+# Tapi jangan abaikan foldernya, agar tetap ada di repo
+!static/upload/.gitkeep
